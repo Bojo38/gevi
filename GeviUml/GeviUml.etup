@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMI xmlns:UML="omg.org/UML/1.4" xmi.version="2.0">
+   <XMI.header>
+      <XMI.metamodel xmi.name="UML" xmi.version="1.4"/>
+		<XMI.documentation>
+			<XMI.exporter>
+				Embarcadero's Describe
+			</XMI.exporter>
+			<XMI.exporterVersion>
+				6.0
+			</XMI.exporterVersion>
+		</XMI.documentation>
+   </XMI.header>
+
+   <XMI.content>
+   <UML:Profile xmi.id="DCE.4BA451FB-1D40-21EA-52C4-DCC1C2D0C6A2" name="Unnamed" isCloned="true" href=".\GeviUml.etup#//*[@xmi.id=&apos;DCE.4BA451FB-1D40-21EA-52C4-DCC1C2D0C6A2&apos;]" isDirty="false"><UML:Element.ownedElement>
+<UML:Stereotype xmi.id="DCE.3E399B23-A684-5567-E1F8-0202C6EE8A98" name="Abstract" owner="__uri_.\GeviUml.etup#//*[@xmi.id=&apos;DCE.4BA451FB-1D40-21EA-52C4-DCC1C2D0C6A2&apos;]"/>
+<UML:Stereotype xmi.id="DCE.16F644E8-F40B-A38D-2744-566B02EFE752" name="Vector" owner="__uri_.\GeviUml.etup#//*[@xmi.id=&apos;DCE.4BA451FB-1D40-21EA-52C4-DCC1C2D0C6A2&apos;]" associationEnd="DCE.D461AEF6-515B-E42E-85E3-9C65992BAAC5 DCE.C82823DF-BB51-BF9C-D150-192EFB928BD9"/>
+<UML:Stereotype xmi.id="DCE.E47A0C93-3400-0694-5F92-1274659FEE61" name="Abstract" owner="__uri_.\GeviUml.etup#//*[@xmi.id=&apos;DCE.4BA451FB-1D40-21EA-52C4-DCC1C2D0C6A2&apos;]" alias="abstract"/>
+<UML:Stereotype xmi.id="DCE.FB1C2B56-F398-A229-182A-7BE2FA6BA5CA" name="interface" owner="__uri_.\GeviUml.etup#//*[@xmi.id=&apos;DCE.4BA451FB-1D40-21EA-52C4-DCC1C2D0C6A2&apos;]"/></UML:Element.ownedElement></UML:Profile></XMI.content>
+</XMI>

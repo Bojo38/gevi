@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+
+<!-- To change this template, choose Tools | Templates and open the template in the editor. -->
+  <title></title>
+
+
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+</head>
+
+
+    <body>
+
+<table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="text-align: left;">&nbsp;
+&nbsp;
+&nbsp; <img style="width: 90px; height: 87px;" alt="SOS MEDECIN" src="entete.png"><br style="color: rgb(51, 0, 153);">
+      <span style="font-weight: bold; font-family: Arial; color: rgb(51, 0, 153);">&nbsp;SOS Medecins 73</span></td>
+      <td style="text-align: right;"><span style="font-family: Arial;">Docteur ${nom}<br>n° ADELI: ${ADELI}</span><br style="font-family: Arial;">
+      <span style="font-family: Arial;"></span><span style="font-family: Arial;"></span></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
+<div style="text-align: center;"><big><big><span style="font-family: Arial;">Rapport d'activit&eacute; du <br>
+${dates.debut} au ${dates.fin}<br>
+</span></big></big><br>
+<#list medecins as medecin>
+<div style="text-align: left;"><span style="font-family: Arial;">${medecin.nom} </span><br>
+</div>
+
+<table style="border-style: solid; border-color: rgb(0, 0, 0); font-family: Arial; width: 100%; text-align: center;" border="1" cellpadding="0" cellspacing="0">
+  <tbody>
+    <tr style="font-weight: bold; background-color: rgb(51, 51, 153); color: rgb(255, 255, 255);">
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Nombre de cr&eacute;neaux</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Nombre de visites</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Somme totale</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Somme encaiss&eacute;e</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Somme des impay&eacute;s</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Somme des astreintes</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0);text-align: center;">Somme des astreintes pay&eacute;es</td>
+    </tr>
+    <tr>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${medecin.resume.nombre_creneaux}</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${medecin.resume.nombre_visites}</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${medecin.resume.somme_totale} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${medecin.resume.somme_encaissee} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${medecin.resume.somme_impayee} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${medecin.resume.somme_astreintes} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${medecin.resume.somme_astreintes_payees} €</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<table style="border-style: solid; border-color: rgb(0, 0, 0); font-family: Arial; width: 100%; text-align: center;" border="1" cellpadding="0" cellspacing="0">
+
+  <tbody>
+    <tr style="font-weight: bold; background-color: rgb(51, 51, 153); color: rgb(255, 255, 255);">
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Date du cr&eacute;neau</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Nombre de visites</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Somme totale</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Somme encaiss&eacute;e</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Somme des impay&eacute;s</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Astreintes</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Astreintes pay&eacute;es</td>
+    </tr>
+
+<#list medecin.creneaux as creneau>
+    <tr>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${creneau.date}</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${creneau.nombre_visites}</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${creneau.somme_totale} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${creneau.somme_encaissee} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${creneau.somme_impayee} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${creneau.somme_astreinte} €</td>
+      <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${creneau.somme_astreinte_payee} €</td>
+    </tr>
+</#list>
+  </tbody>
+</table>
+
+<br><br>
+    </#list>
+
+</div>
+<#if display_graph_type_bar==1>
+        <center><img alt="GRAPHIQUE" src="typebar.png"></center>
+        </#if>
+        <#if display_graph_type_pie==1>
+        <center><img alt="GRAPHIQUE" src="typepie.png"></center>
+        </#if>
+        <#if display_graph_paye_pie==1>
+        <center><img alt="GRAPHIQUE" src="payepie.png"></center>
+        </#if>
+        <#if display_graph_paye_bar==1>
+        <center><img alt="GRAPHIQUE" src="payebar.png"></center>
+        </#if>
+        <#if display_graph_source_pie==1>
+        <center><img alt="GRAPHIQUE" src="sourcepie.png"></center>
+        </#if>
+        <#if display_graph_source_bar==1>
+        <center><img alt="GRAPHIQUE" src="sourcebar.png"></center>
+        </#if>
+        <#if display_graph_exec_bar==1>
+        <center><img alt="GRAPHIQUE" src="execbar.png"></center>
+        </#if>
+        <#if display_graph_exec_pie==1>
+        <center><img alt="GRAPHIQUE" src="execpie.png"></center>
+        </#if>
+<div align="right">
+            <small>
+            Rapport généré par GeVi &copy; le ${dateGeneration}.
+            </small>
+        </div>
+</body>
+</html>
