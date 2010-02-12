@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <!-- To change this template, choose Tools | Templates and open the template in the editor. -->
+        <title></title>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    </head>
+    <body>
+        <table style="text-align: left; width: 100%;" border="0" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">&nbsp;
+                        &nbsp;
+                        &nbsp; <img style="width: 90px; height: 87px;" alt="SOS MEDECIN" src="entete.png"><br style="color: rgb(51, 0, 153);">
+                    <span style="font-weight: bold; font-family: Arial; color: rgb(51, 0, 153);">&nbsp;SOS Medecins 73</span></td>
+                    <td style="text-align: right;"><span style="font-family: Arial;">Docteur ${nom}<br>n° ADELI: ${ADELI}<br style="font-family: Arial;">
+                        </span>
+                    <span style="font-family: Arial;"></span><span style="font-family: Arial;"></span></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <div style="text-align: center;"><big><big><span style="font-family: Arial;">Rapport financier du ${dates.debut} au ${dates.fin}<br>
+            </span></big></big><br>
+            <div style="text-align: left;"><big style="font-style: italic;"><span style="font-family: Arial;"></span></big><br>
+            </div>
+            <table style="border-style: solid; border-color: rgb(0, 0, 0); font-family: Arial; width: 100%; text-align: center;" border="1" cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr style="font-weight: bold; background-color: rgb(51, 51, 153); color: rgb(255, 255, 255);">
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Recettes</td>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Dépenses</td>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Bénéfice</td>
+                    </tr>
+                    <tr>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${recette} € (Banque: ${recettes_banque} € / Espèces: ${recettes_especes} €) </td>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${depense} € (Banque: ${depenses_banque} € / Espèces: ${depenses_especes} €)</td>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">${benefice} € (D&ucirc;: ${du} €)</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <big><big><span style="font-family: Arial;">Recettes</span></big></big>
+            <table style="border-style: solid; border-color: rgb(0, 0, 0); font-family: Arial; width: 100%; text-align: center;" border="1" cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr style="font-weight: bold; background-color: rgb(51, 51, 153); color: rgb(255, 255, 255);">
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Catégorie</td>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Montant</td>
+                    </tr>
+                    <#list recettes as recette>
+                    <tr>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${recette.categorie}</td>
+                        <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${recette.montant}</td>
+                    </tr>
+                    </#list>
+                </tbody>
+            </table>
+        <big style="font-family: Arial;"><big>Dépenses</big></big></div>
+        <big style="font-family: Arial;"><big><big><big></big></big></big></big>
+        <table style="border-style: solid; border-color: rgb(0, 0, 0); font-family: Arial; width: 100%; text-align: center;" border="1" cellpadding="0" cellspacing="0">
+            <tbody>
+                <tr style="font-weight: bold; background-color: rgb(51, 51, 153); color: rgb(255, 255, 255);">
+                    <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial; font-weight: normal;"><big>Catégorie</big></td>
+                    <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center;">Montant</td>
+                </tr>
+                <#list depenses as depense>
+                <tr>
+                    <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${depense.categorie}</td>
+                    <td style="border-style: solid; border-color: rgb(0, 0, 0); text-align: center; font-family: Arial;">${depense.montant}</td>
+                </tr>
+                </#list>
+            </tbody>
+        </table>
+        <br>
+        <#if display_graph_bar==1>
+        <center><img alt="GRAPHIQUE" src="globalbar.png"></center>
+        <center><img alt="GRAPHIQUE" src="sourcebar.png"></center>
+        <center><img alt="GRAPHIQUE" src="depensesbar.png"></center>
+        <center><img alt="GRAPHIQUE" src="typebar.png"></center>
+        <br>
+        </#if>        
+        <#if display_graph_pie==1>
+        <center><img alt="GRAPHIQUE" src="globalpie.png"></center>
+        <center><img alt="GRAPHIQUE" src="sourcepie.png"></center>
+        <center><img alt="GRAPHIQUE" src="depensespie.png"></center>
+        <center><img alt="GRAPHIQUE" src="typepie.png"></center>
+        </#if>
+        <br>
+        <div align="right">
+            <small>
+                Rapport généré par GeVi © le ${dateGeneration}.
+            </small>
+        </div>
+    </body>
+</html>
