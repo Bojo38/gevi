@@ -851,6 +851,10 @@ public class MainWindow extends javax.swing.JFrame {
         {
             Singleton.instance().getDocument().getParametres().setSavePeriod(30000);
         }
+         catch (NullPointerException e)
+        {
+            
+        }
     }
 
     private void jmiNouveauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiNouveauActionPerformed
