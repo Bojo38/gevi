@@ -205,8 +205,22 @@ public class jdgNewDocument extends javax.swing.JDialog {
         user.setPrenom(jtfPrenom.getText());
         user.setTelephone(jtfTelephone.getText());
 
+        try
+        {
         doc.getBanque().setSoldeInitialBanque(Double.parseDouble(jftSoldeBanque.getText()));
+        }
+        catch (NumberFormatException e)
+        {
+             doc.getBanque().setSoldeInitialBanque(0.0);
+        }
+        try
+        {
         doc.getBanque().setSoldeInitialCaisse(Double.parseDouble(jftSoldeCaisse.getText()));
+        }
+        catch (NumberFormatException e)
+        {
+             doc.getBanque().setSoldeInitialCaisse(0.0);
+        }
 
         if (user.getNom().equals("")) {
             JOptionPane.showMessageDialog(this, "Le champ NOM est vide", "Champ manquant", JOptionPane.ERROR_MESSAGE);
