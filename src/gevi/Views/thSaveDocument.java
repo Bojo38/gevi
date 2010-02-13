@@ -28,7 +28,15 @@ public class thSaveDocument extends Thread {
 
     public void run() {
 
-        int savePeriod = Singleton.instance().getDocument().getParametres().getSavePeriod();
+        int savePeriod = 30000;
+        try
+        {
+            savePeriod=Singleton.instance().getDocument().getParametres().getSavePeriod();
+        }
+        catch (NullPointerException e)
+        {
+            
+        }
         String filename = Settings.getSingleton().getProperty("LastFile");
 
         if (savePeriod != 0) {
