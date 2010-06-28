@@ -144,6 +144,16 @@ public class XML {
         parametres.setAttribute(IPM);
         Attribute GAV = new Attribute("GAV", Double.toString(doc.getParametres().getTarifGAV()));
         parametres.setAttribute(GAV);
+        Attribute Period = new Attribute("Period", Integer.toString(doc.getParametres().getSavePeriod()));
+        parametres.setAttribute(Period);
+        Attribute AutoFTP = new Attribute("AutoFTP", Boolean.toString(doc.getParametres().getAutoFTP()));
+        parametres.setAttribute(AutoFTP);
+        Attribute FTPDirectory = new Attribute("FTPDirectory", doc.getParametres().getFTPDirectory());
+        parametres.setAttribute(FTPDirectory);
+        Attribute FTPLogin = new Attribute("FTPLogin", doc.getParametres().getFTPId());
+        parametres.setAttribute(FTPLogin);
+        Attribute FTPServer = new Attribute("FTPServer", doc.getParametres().getFTPServer());
+        parametres.setAttribute(FTPServer);
         document.addContent(parametres);
 
         /* Creneaux */
@@ -356,6 +366,11 @@ public class XML {
                 doc.getParametres().setTarifGAV(parametresU.getAttribute("GAV").getDoubleValue());
                 doc.getParametres().setTarifIK(parametresU.getAttribute("IK").getDoubleValue());
                 doc.getParametres().setTarifIKM(parametresU.getAttribute("IKM").getDoubleValue());
+                doc.getParametres().setSavePeriod(parametresU.getAttribute("Period").getIntValue());
+                doc.getParametres().setAutoFTP(parametresU.getAttribute("AutoFTP").getBooleanValue());
+                doc.getParametres().setFTPDirectory(parametresU.getAttribute("FTPDirectory").getValue());
+                doc.getParametres().setFTPId(parametresU.getAttribute("FTPLogin").getValue());
+                doc.getParametres().setFTPServer(parametresU.getAttribute("FTPServer").getValue());
             } catch (DataConversionException e) {
                 JOptionPane.showMessageDialog(MainWindow.getMainWindow(), e.getLocalizedMessage());
             } catch (NullPointerException e) {

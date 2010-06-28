@@ -629,8 +629,8 @@
         <Container class="javax.swing.JPanel" name="jPanel15">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Param&#xe8;tres du prgoramme">
-                <Property name="tabTitle" type="java.lang.String" value="Param&#xe8;tres du prgoramme"/>
+              <JTabbedPaneConstraints tabName="Param&#xe8;tres du programme">
+                <Property name="tabTitle" type="java.lang.String" value="Param&#xe8;tres du programme"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -667,6 +667,62 @@
                     <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor" preCode="try {" postCode="} catch (java.text.ParseException ex) {&#xa;ex.printStackTrace();&#xa;}">
                       <Format format="#######s" subtype="-1" type="5"/>
                     </Property>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jpnParams2">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="P&#xe9;riode de sauvegarde par FTP"/>
+                  </Border>
+                </Property>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                  <BorderConstraints direction="South"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="2"/>
+                <Property name="rows" type="int" value="5"/>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JLabel" name="jLabel24">
+                  <Properties>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="text" type="java.lang.String" value="Adresse du site FTP :"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="jtfAdress">
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel25">
+                  <Properties>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="text" type="java.lang.String" value="Identifiant de connexion:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="jtfIdentifier">
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel27">
+                  <Properties>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="text" type="java.lang.String" value="R&#xe9;pertoire de sauvegarde: "/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="jtfDirectory">
+                </Component>
+                <Component class="javax.swing.JLabel" name="jLabel28">
+                  <Properties>
+                    <Property name="horizontalAlignment" type="int" value="11"/>
+                    <Property name="text" type="java.lang.String" value="Option de sauvegarde :"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="jcbAutomaticSave">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Sauvegarde automatique en quittant"/>
                   </Properties>
                 </Component>
               </SubComponents>

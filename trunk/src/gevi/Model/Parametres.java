@@ -47,6 +47,12 @@ public class Parametres implements Serializable {
 
     private int mSavePeriod=30000;
 
+    private String mFTPServer="";
+    private String mFTPId="";
+    
+    private String mFTPDir="";
+    private boolean mFTPAuto=true;
+
     // <editor-fold defaultstate="collapsed" desc=" UML Marker "> 
     // #[regen=yes,id=DCE.76E147C5-64D2-B15A-0767-591435DCB48F]
     // </editor-fold> 
@@ -254,6 +260,46 @@ public class Parametres implements Serializable {
     public int getSavePeriod()
     {
         return mSavePeriod;
+    }
+
+    public boolean getAutoFTP()
+    {
+        return mFTPAuto;
+    }
+
+    public void setAutoFTP(boolean val)
+    {
+        mFTPAuto=val;
+    }
+
+    public String getFTPServer()
+    {
+        return mFTPServer;
+    }
+
+    public void setFTPServer(String val)
+    {
+        mFTPServer=val;
+    }
+
+    public String getFTPId()
+    {
+        return mFTPId;
+    }
+
+    public void setFTPId(String val)
+    {
+        mFTPId=val;
+    }
+    
+    public String getFTPDirectory()
+    {
+        return mFTPDir;
+    }
+
+    public void setFTPDirectory(String val)
+    {
+        mFTPDir=val;
     }
 
 }
