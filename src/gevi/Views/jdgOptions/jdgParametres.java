@@ -66,6 +66,10 @@ public class jdgParametres extends javax.swing.JDialog {
         jfttIPM.setValue(_params.getTarifIPM());
 
         jfttPeriod.setValue(_params.getSavePeriod()/1000);
+        jtfAdress.setText(_params.getFTPServer());
+        jtfDirectory.setText(_params.getFTPDirectory());
+        jtfIdentifier.setText(_params.getFTPId());
+        jcbAutomaticSave.setSelected(_params.getAutoFTP());
     }
   
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -137,6 +141,15 @@ public class jdgParametres extends javax.swing.JDialog {
         jpnParams1 = new javax.swing.JPanel();
         jLabel23 = new javax.swing.JLabel();
         jfttPeriod = new javax.swing.JFormattedTextField();
+        jpnParams2 = new javax.swing.JPanel();
+        jLabel24 = new javax.swing.JLabel();
+        jtfAdress = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        jtfIdentifier = new javax.swing.JTextField();
+        jLabel27 = new javax.swing.JLabel();
+        jtfDirectory = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
+        jcbAutomaticSave = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Paramètres");
@@ -402,7 +415,34 @@ public class jdgParametres extends javax.swing.JDialog {
 
         jPanel15.add(jpnParams1, java.awt.BorderLayout.NORTH);
 
-        jTabbedPane1.addTab("Paramètres du prgoramme", jPanel15);
+        jpnParams2.setBorder(javax.swing.BorderFactory.createTitledBorder("Période de sauvegarde par FTP"));
+        jpnParams2.setLayout(new java.awt.GridLayout(5, 2));
+
+        jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel24.setText("Adresse du site FTP :");
+        jpnParams2.add(jLabel24);
+        jpnParams2.add(jtfAdress);
+
+        jLabel25.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel25.setText("Identifiant de connexion:");
+        jpnParams2.add(jLabel25);
+        jpnParams2.add(jtfIdentifier);
+
+        jLabel27.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel27.setText("Répertoire de sauvegarde: ");
+        jpnParams2.add(jLabel27);
+        jpnParams2.add(jtfDirectory);
+
+        jLabel28.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel28.setText("Option de sauvegarde :");
+        jpnParams2.add(jLabel28);
+
+        jcbAutomaticSave.setText("Sauvegarde automatique en quittant");
+        jpnParams2.add(jcbAutomaticSave);
+
+        jPanel15.add(jpnParams2, java.awt.BorderLayout.SOUTH);
+
+        jTabbedPane1.addTab("Paramètres du programme", jPanel15);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -436,6 +476,12 @@ public class jdgParametres extends javax.swing.JDialog {
         _params.setTarifIPM(((Double)jfttIPM.getValue()).doubleValue());
 
         _params.setSavePeriod(((Integer)jfttPeriod.getValue()).intValue()*1000);
+
+        _params.setAutoFTP(jcbAutomaticSave.isSelected());
+        _params.setFTPDirectory(jtfDirectory.getText());
+        _params.setFTPId(jtfIdentifier.getText());
+        _params.setFTPServer(jtfAdress.getText());
+
         this.setVisible(false);
     }//GEN-LAST:event_jbtOKActionPerformed
 
@@ -456,6 +502,10 @@ public class jdgParametres extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -481,6 +531,7 @@ public class jdgParametres extends javax.swing.JDialog {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToggleButton jbtAnnuler;
     private javax.swing.JToggleButton jbtOK;
+    private javax.swing.JCheckBox jcbAutomaticSave;
     private javax.swing.JFormattedTextField jfttAstreinte;
     private javax.swing.JFormattedTextField jfttC;
     private javax.swing.JFormattedTextField jfttCRD;
@@ -506,7 +557,11 @@ public class jdgParametres extends javax.swing.JDialog {
     private javax.swing.JPanel jpnBottom;
     private javax.swing.JPanel jpnParams;
     private javax.swing.JPanel jpnParams1;
+    private javax.swing.JPanel jpnParams2;
     private javax.swing.JPanel jpnVisites;
+    private javax.swing.JTextField jtfAdress;
+    private javax.swing.JTextField jtfDirectory;
+    private javax.swing.JTextField jtfIdentifier;
     // End of variables declaration//GEN-END:variables
 
 }

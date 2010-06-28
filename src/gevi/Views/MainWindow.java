@@ -43,6 +43,13 @@ import gevi.Views.jifReports.jifReportActivite;
 import gevi.Views.jifReports.jifReportEncaissements;
 import gevi.Views.jifReports.jifReportFinancier;
 import gevi.Views.jifReports.jifReportImpayes;
+import it.sauronsoftware.ftp4j.FTPAbortedException;
+import it.sauronsoftware.ftp4j.FTPClient;
+import it.sauronsoftware.ftp4j.FTPDataTransferException;
+import it.sauronsoftware.ftp4j.FTPException;
+import it.sauronsoftware.ftp4j.FTPFile;
+import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
+import it.sauronsoftware.ftp4j.FTPListParseException;
 import java.awt.DisplayMode;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -67,6 +74,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.UIManager;
 import org.jdesktop.swingx.JXTaskPane;
 import javax.swing.tree.DefaultTreeModel;
@@ -136,13 +144,13 @@ public class MainWindow extends javax.swing.JFrame {
 
         filename = Settings.getSingleton().getProperty("LastFile");
 
-       
+
         InitDétailsPane();
         InitRapportPane();
 
         if (filename != null) {
             if (!filename.equals("")) {
-                loadFile();
+                loadFile(filename);
             }
         }
 
@@ -159,7 +167,7 @@ public class MainWindow extends javax.swing.JFrame {
         jxtpRapports.add(fin);
         jxdpDateFinRapport = new JXDatePicker();
         jxtpRapports.add(jxdpDateFinRapport);
-               
+
         jbtVoirActivite = new JButton("Rapport d'activité");
         jbtVoirActivite.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gevi/images/sos_bleu_l.png")));
         jbtVoirActivite.addActionListener(new ActionListener() {
@@ -179,7 +187,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         jxtpRapports.add(jbtVoirFinancier);
-       
+
         jbtVoirEncaissements = new JButton("Rapport des visites encaissées");
         jbtVoirEncaissements.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gevi/images/sos_rouge_l.png")));
         jbtVoirEncaissements.addActionListener(new ActionListener() {
@@ -217,7 +225,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jdgSelectionCreneau selection = new jdgSelectionCreneau(MainWindow.getMainWindow(), true, Singleton.instance().getDocument(), jxdpDateDebutRapport.getDate(), jxdpDateFinRapport.getDate(), jcbMedecins.getSelectedIndex(), 1);
                 selection.setVisible(true);
-                selection=null;
+                selection = null;
             }
         });
         jxtpRapports.add(jbtVoirRapportCreneau);
@@ -241,7 +249,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
         jxtpRapports.add(jbtVoirRapportFrais);
-        
+
         jbtVoirRapportVersement = new JButton("Rapport d'un versement");
         jbtVoirRapportVersement.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gevi/images/sos_cyan_l.png")));
         jbtVoirRapportVersement.addActionListener(new ActionListener() {
@@ -249,7 +257,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 jdgSelectionVersements jdg = new jdgSelectionVersements(MainWindow.getMainWindow(), true, Singleton.instance().getDocument(), jxdpDateDebutRapport.getDate(), jxdpDateFinRapport.getDate(), jcbMedecins.getSelectedIndex(), true);
                 jdg.setVisible(true);
-                jdg=null;
+                jdg = null;
             }
         });
         jxtpRapports.add(jbtVoirRapportVersement);
@@ -264,7 +272,6 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jxtpRapports.add(jbtVoirRapportVersements);
     }
-   
 
     protected void InitDétailsPane() {
         JLabel debut = new JLabel("Date de début");
@@ -274,7 +281,7 @@ public class MainWindow extends javax.swing.JFrame {
         JLabel fin = new JLabel("Date de fin");
         jxtpDétails.add(fin);
         jxdpDateFinDétails = new JXDatePicker();
-        jxtpDétails.add(jxdpDateFinDétails);      
+        jxtpDétails.add(jxdpDateFinDétails);
         JLabel qui = new JLabel("Medecin");
         jxtpDétails.add(qui);
         jcbMedecins = new JComboBox();
@@ -287,7 +294,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jdgTransfert transfert = new jdgTransfert(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
                 transfert.setVisible(true);
-                transfert=null;
+                transfert = null;
             }
         });
         jxtpDétails.add(jbtTransfert);
@@ -309,11 +316,11 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jdgSaisieCreneau saisie = new jdgSaisieCreneau(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
                 saisie.setVisible(true);
-                saisie=null;
+                saisie = null;
             }
         });
         jxtpDétails.add(jbtEntrerCreneau);
-        
+
         jbtSupprimerCreneau = new JButton("Supprimer un créneau");
         jbtSupprimerCreneau.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gevi/images/sos_jaune_l.png")));
         jbtSupprimerCreneau.addActionListener(new java.awt.event.ActionListener() {
@@ -321,7 +328,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jdgSelectionCreneau selection = new jdgSelectionCreneau(MainWindow.getMainWindow(), true, Singleton.instance().getDocument(), jxdpDateDébutDétails.getDate(), jxdpDateFinDétails.getDate(), jcbMedecins.getSelectedIndex(), -1);
                 selection.setVisible(true);
-                selection=null;
+                selection = null;
             }
         });
         jxtpDétails.add(jbtSupprimerCreneau);
@@ -333,11 +340,11 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jdgSelectionCreneau selection = new jdgSelectionCreneau(MainWindow.getMainWindow(), true, Singleton.instance().getDocument(), jxdpDateDébutDétails.getDate(), jxdpDateFinDétails.getDate(), jcbMedecins.getSelectedIndex(), 0);
                 selection.setVisible(true);
-                selection=null;
+                selection = null;
             }
         });
         jxtpDétails.add(jbtVoirCreneauxPeriode);
-        
+
         jbtVoirVisites = new JButton("Gérer les visites");
         jbtVoirVisites.setIcon(new javax.swing.ImageIcon(getClass().getResource("/gevi/images/sos_vert_l.png")));
         jbtVoirVisites.addActionListener(new java.awt.event.ActionListener() {
@@ -365,7 +372,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 jdgDepense jdg = new jdgDepense(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
                 jdg.setVisible(true);
-                jdg=null;
+                jdg = null;
             }
         });
         jxtpDétails.add(jbtDepense);
@@ -387,7 +394,7 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 jdgSelectionVersements jdg = new jdgSelectionVersements(MainWindow.getMainWindow(), true, Singleton.instance().getDocument(), jxdpDateDébutDétails.getDate(), jxdpDateFinDétails.getDate(), jcbMedecins.getSelectedIndex(), false);
                 jdg.setVisible(true);
-                jdg=null;
+                jdg = null;
             }
         });
 
@@ -399,12 +406,11 @@ public class MainWindow extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 jdgBilan jdg = new jdgBilan(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
                 jdg.setVisible(true);
-                jdg=null;
+                jdg = null;
             }
         });
         jxtpDétails.add(jbtRealiserVersement);
     }
-
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -431,6 +437,10 @@ public class MainWindow extends javax.swing.JFrame {
         jmiEnregistrer = new javax.swing.JMenuItem();
         jmiEnregistrerSous = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
+        jmiFTPSave = new javax.swing.JMenuItem();
+        jmiFTPDelete = new javax.swing.JMenuItem();
+        jmiFTPLoad = new javax.swing.JMenuItem();
+        jSeparator9 = new javax.swing.JSeparator();
         jmiQuitter = new javax.swing.JMenuItem();
         jmnOptions = new javax.swing.JMenu();
         jmiRemplacantListe = new javax.swing.JMenuItem();
@@ -578,6 +588,31 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jmnFichier.add(jmiEnregistrerSous);
         jmnFichier.add(jSeparator1);
+
+        jmiFTPSave.setText("Sauvegarde par FTP");
+        jmiFTPSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiFTPSaveActionPerformed(evt);
+            }
+        });
+        jmnFichier.add(jmiFTPSave);
+
+        jmiFTPDelete.setText("Effacer un fichier FTP");
+        jmiFTPDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiFTPDeleteActionPerformed(evt);
+            }
+        });
+        jmnFichier.add(jmiFTPDelete);
+
+        jmiFTPLoad.setText("Chargement par FTP");
+        jmiFTPLoad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiFTPLoadActionPerformed(evt);
+            }
+        });
+        jmnFichier.add(jmiFTPLoad);
+        jmnFichier.add(jSeparator9);
 
         jmiQuitter.setText("Quitter");
         jmiQuitter.addActionListener(new java.awt.event.ActionListener() {
@@ -815,7 +850,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         jdgParametres params = new jdgParametres(this, true, Singleton.instance().getDocument().getParametres());
         params.setVisible(true);
-        params=null;
+        params = null;
 }//GEN-LAST:event_jmiParametresActionPerformed
 
     private void jmiOuvrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiOuvrirActionPerformed
@@ -824,12 +859,12 @@ public class MainWindow extends javax.swing.JFrame {
         int filechoosed = chooser.showOpenDialog(this);
         if (filechoosed == JFileChooser.APPROVE_OPTION) {
             filename = chooser.getSelectedFile().getAbsolutePath();
-            loadFile();
+            loadFile(filename);
         }
         repaint();
 }//GEN-LAST:event_jmiOuvrirActionPerformed
 
-    private void loadFile() {
+    private void loadFile(String filename) {
         SAXBuilder sxb = new SAXBuilder();
         try {
             org.jdom.Document document = sxb.build(new File(filename));
@@ -843,12 +878,9 @@ public class MainWindow extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(MainWindow.getMainWindow(), e.getMessage());
         }
 
-        try
-        {
+        try {
             Singleton.instance().getDocument().getParametres().setSavePeriod(Integer.parseInt(Settings.getSingleton().getProperty("SavePeriod")));
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             Singleton.instance().getDocument().getParametres().setSavePeriod(30000);
         }
          catch (NullPointerException e)
@@ -860,20 +892,20 @@ public class MainWindow extends javax.swing.JFrame {
     private void jmiNouveauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiNouveauActionPerformed
         jdgNewDocument newDoc = new jdgNewDocument(this, true);
         newDoc.setVisible(true);
-        newDoc=null;
+        newDoc = null;
         repaint();
     }//GEN-LAST:event_jmiNouveauActionPerformed
 
     private void jmiQuitterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiQuitterActionPerformed
 
-        Settings.getSingleton().setProperty("SavePeriod", ((Integer)Singleton.instance().getDocument().getParametres().getSavePeriod()).toString());
+        Settings.getSingleton().setProperty("SavePeriod", ((Integer) Singleton.instance().getDocument().getParametres().getSavePeriod()).toString());
         save.setStop();
-        
+
         /*if (Singleton.instance().getDocument() != null) {
-            int save = JOptionPane.showConfirmDialog(this, "Voulez-vous sauver le document ?", "Quitte", JOptionPane.YES_NO_OPTION);
-            if (save == JOptionPane.YES_OPTION) {*/
-                jmiEnregistrerActionPerformed(evt);
-           /* }
+        int save = JOptionPane.showConfirmDialog(this, "Voulez-vous sauver le document ?", "Quitte", JOptionPane.YES_NO_OPTION);
+        if (save == JOptionPane.YES_OPTION) {*/
+        jmiEnregistrerActionPerformed(evt);
+        /* }
         }*/
         this.setVisible(false);
         System.exit(0);
@@ -906,6 +938,7 @@ public class MainWindow extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(MainWindow.getMainWindow(), e.getMessage());
             }
         }
+        repaint();
     }//GEN-LAST:event_jmiEnregistrerActionPerformed
 
     private void jmiEnregistrerSousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiEnregistrerSousActionPerformed
@@ -917,13 +950,13 @@ public class MainWindow extends javax.swing.JFrame {
     private void jmiUtilisateurActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiUtilisateurActionPerformed
         jdgViewUser vu = new jdgViewUser(this, true, Singleton.instance().getDocument());
         vu.setVisible(true);
-        vu=null;
+        vu = null;
 }//GEN-LAST:event_jmiUtilisateurActionPerformed
 
     private void jmiRemplacantListeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiRemplacantListeActionPerformed
         jdgRemplacants remp = new jdgRemplacants(this, true, Singleton.instance().getDocument());
         remp.setVisible(true);
-        remp=null;
+        remp = null;
 }//GEN-LAST:event_jmiRemplacantListeActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -977,7 +1010,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void jmiCategoriesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiCategoriesActionPerformed
         jdgCategories jdg = new jdgCategories(this, true, Singleton.instance().getDocument());
         jdg.setVisible(true);
-        jdg=null;
+        jdg = null;
 }//GEN-LAST:event_jmiCategoriesActionPerformed
 
     private void jmiActiviteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiActiviteActionPerformed
@@ -1003,7 +1036,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void jmiCreneauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiCreneauActionPerformed
         jdgSelectionCreneau selection = new jdgSelectionCreneau(MainWindow.getMainWindow(), true, Singleton.instance().getDocument(), Singleton.instance().getDocument().getDate(), new Date(), 0, 2);
         selection.setVisible(true);
-        selection=null;
+        selection = null;
 }//GEN-LAST:event_jmiCreneauActionPerformed
 
     private void jmiVisitesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiVisitesActionPerformed
@@ -1037,54 +1070,190 @@ public class MainWindow extends javax.swing.JFrame {
     private void jmiAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAboutActionPerformed
         jdgAbout jdg = new jdgAbout(this, true);
         jdg.setVisible(true);
-        jdg=null;
+        jdg = null;
 }//GEN-LAST:event_jmiAboutActionPerformed
 
     private void jxtpRapportsPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jxtpRapportsPropertyChange
-            if (!jxtpRapports.isCollapsed())
-            {
-                jxtpDétails.setCollapsed(true);
-            }
+        if (!jxtpRapports.isCollapsed()) {
+            jxtpDétails.setCollapsed(true);
+        }
 }//GEN-LAST:event_jxtpRapportsPropertyChange
 
     private void jxtpDétailsPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jxtpDétailsPropertyChange
-        if (!jxtpDétails.isCollapsed())
-            {
-                jxtpRapports.setCollapsed(true);
-            }
+        if (!jxtpDétails.isCollapsed()) {
+            jxtpRapports.setCollapsed(true);
+        }
 }//GEN-LAST:event_jxtpDétailsPropertyChange
 
     private void jmiRevisionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiRevisionsActionPerformed
         jdgRevisions jdg = new jdgRevisions(this, true);
         jdg.setVisible(true);
-        jdg=null;
+        jdg = null;
 }//GEN-LAST:event_jmiRevisionsActionPerformed
 
     private void jbtAjouterCréneauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAjouterCréneauActionPerformed
-         jdgSaisieCreneau saisie = new jdgSaisieCreneau(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
-         saisie.setVisible(true);
-         saisie=null;
+        jdgSaisieCreneau saisie = new jdgSaisieCreneau(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
+        saisie.setVisible(true);
+        saisie = null;
     }//GEN-LAST:event_jbtAjouterCréneauActionPerformed
 
     private void jbtAddDepenseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAddDepenseActionPerformed
-         jdgDepense jdg = new jdgDepense(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
-         jdg.setVisible(true);
-         jdg=null;
+        jdgDepense jdg = new jdgDepense(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
+        jdg.setVisible(true);
+        jdg = null;
     }//GEN-LAST:event_jbtAddDepenseActionPerformed
 
     private void jbtAjouterReversementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAjouterReversementActionPerformed
         jdgBilan jdg = new jdgBilan(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
         jdg.setVisible(true);
-        jdg=null;
+        jdg = null;
     }//GEN-LAST:event_jbtAjouterReversementActionPerformed
 
     private void jbtAddTransfertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAddTransfertActionPerformed
         jdgTransfert transfert = new jdgTransfert(MainWindow.getMainWindow(), true, Singleton.instance().getDocument());
         transfert.setVisible(true);
-        transfert=null;
+        transfert = null;
 }//GEN-LAST:event_jbtAddTransfertActionPerformed
 
-   static thSaveDocument save=null;
+    private void jmiFTPSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiFTPSaveActionPerformed
+
+
+        FTPClient client = new FTPClient();
+        try {
+            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+            sortie.output(XML.convertDocumentToXML(Singleton.instance().getDocument()), new FileOutputStream(filename));
+
+            client.connect(Singleton.instance().getDocument().getParametres().getFTPServer());
+            /* connect & login to host */
+
+            String password = JOptionPane.showInputDialog("Entrez le mot de passe pour le serveur FTP");
+            client.login(Singleton.instance().getDocument().getParametres().getFTPId(), password);
+            if (client.isConnected()) {
+                File f = new File(filename);
+                SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
+
+                client.changeDirectory(Singleton.instance().getDocument().getParametres().getFTPDirectory());
+                client.upload(f);
+                client.rename(f.getName(), f.getName() + "-" + format.format(new Date()));
+                JOptionPane.showMessageDialog(this, f.getName()+" sauvegardé");
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur de connexion");
+            }
+            client.disconnect(true);
+        } catch (FTPIllegalReplyException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPDataTransferException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPAbortedException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        }
+
+    }//GEN-LAST:event_jmiFTPSaveActionPerformed
+
+    private void jmiFTPLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiFTPLoadActionPerformed
+        FTPClient client = new FTPClient();
+        try {
+            client.connect(Singleton.instance().getDocument().getParametres().getFTPServer());
+            /* connect & login to host */
+
+            String password = JOptionPane.showInputDialog("Entrez le mot de passe pour les serveur FTP");
+            client.login(Singleton.instance().getDocument().getParametres().getFTPId(), password);
+            if (client.isConnected()) {
+                client.changeDirectory(Singleton.instance().getDocument().getParametres().getFTPDirectory());
+                FTPFile[] list = client.list();
+                /*String[] liste = new String[list.length];
+                for (int i = 0; i < list.length; i++) {
+                    liste[i] = list[i].getName();
+                }
+                int option = JOptionPane.showOptionDialog(this, "Sélectionnez le fichier", "Charger par FTP", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, liste, liste[0]);
+*/
+                jdgSelectionFichier jdg=new jdgSelectionFichier(this, true, list);
+                jdg.setVisible(true);
+
+                /*if (option >= 0) {
+                    FTPFile file = list[option];*/
+                FTPFile file = jdg.getSelection();
+                if (file!=null)
+                {
+                    File f = new File(filename);
+                    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
+                    client.download(file.getName(), new File(f.getParentFile() + "/" + file.getName()));                    
+                    loadFile(f.getParentFile() + "/" + file.getName());
+                    filename=f.getParentFile() + "/" + file.getName();
+                    JOptionPane.showMessageDialog(this, file.getName()+" chargé");
+                    repaint();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur de connexion");
+            }
+            client.disconnect(true);
+        } catch (FTPIllegalReplyException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPDataTransferException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPAbortedException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPListParseException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        }
+    }//GEN-LAST:event_jmiFTPLoadActionPerformed
+
+    private void jmiFTPDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiFTPDeleteActionPerformed
+        FTPClient client = new FTPClient();
+        try {
+            client.connect(Singleton.instance().getDocument().getParametres().getFTPServer());
+            /* connect & login to host */
+
+            String password = JOptionPane.showInputDialog("Entrez le mot de passe pour les serveur FTP");
+            client.login(Singleton.instance().getDocument().getParametres().getFTPId(), password);
+            if (client.isConnected()) {
+                client.changeDirectory(Singleton.instance().getDocument().getParametres().getFTPDirectory());
+                FTPFile[] list = client.list();
+                /*String[] liste = new String[list.length];
+                for (int i = 0; i < list.length; i++) {
+                    liste[i] = list[i].getName();
+                }
+                int option = JOptionPane.showOptionDialog(this, "Sélectionnez le fichier", "Charger par FTP", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, liste, liste[0]);
+*/
+                jdgSelectionFichier jdg=new jdgSelectionFichier(this, true, list);
+                jdg.setVisible(true);
+
+                /*if (option >= 0) {
+                    FTPFile file = list[option];*/
+                FTPFile file = jdg.getSelection();
+                if (file!=null)
+                {
+                    client.deleteFile(file.getName());
+                    JOptionPane.showMessageDialog(this, file.getName()+" effacé");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Erreur de connexion");
+            }
+            client.disconnect(true);
+        } catch (FTPIllegalReplyException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPDataTransferException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPAbortedException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (FTPListParseException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        }
+    }//GEN-LAST:event_jmiFTPDeleteActionPerformed
+    static thSaveDocument save = null;
+
     /**
      * @param args the command line arguments
      */
@@ -1104,10 +1273,10 @@ public class MainWindow extends javax.swing.JFrame {
 
                 singleton = new MainWindow();
 
-                thCheckMemory check=new thCheckMemory();
+                thCheckMemory check = new thCheckMemory();
                 check.start();
 
-                save=new thSaveDocument();
+                save = new thSaveDocument();
                 save.start();
 
                 singleton.setVisible(true);
@@ -1115,7 +1284,6 @@ public class MainWindow extends javax.swing.JFrame {
         });
     }
     static MainWindow singleton = null;
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JMenuBar jMenuBar1;
     javax.swing.JPanel jPanel1;
@@ -1127,6 +1295,7 @@ public class MainWindow extends javax.swing.JFrame {
     javax.swing.JSeparator jSeparator6;
     javax.swing.JSeparator jSeparator7;
     javax.swing.JSeparator jSeparator8;
+    javax.swing.JSeparator jSeparator9;
     org.jdesktop.swingx.JXTaskPaneContainer jXTaskPaneContainer1;
     javax.swing.JButton jbtAddDepense;
     javax.swing.JButton jbtAddTransfert;
@@ -1144,6 +1313,9 @@ public class MainWindow extends javax.swing.JFrame {
     javax.swing.JMenuItem jmiEncaissement;
     javax.swing.JMenuItem jmiEnregistrer;
     javax.swing.JMenuItem jmiEnregistrerSous;
+    javax.swing.JMenuItem jmiFTPDelete;
+    javax.swing.JMenuItem jmiFTPLoad;
+    javax.swing.JMenuItem jmiFTPSave;
     javax.swing.JMenuItem jmiFermerTout;
     javax.swing.JMenuItem jmiFinancier;
     javax.swing.JMenuItem jmiGAV;
@@ -1328,7 +1500,7 @@ public class MainWindow extends javax.swing.JFrame {
     public static final int CST_CERTIF_MEB = 25;
     public static final int CST_CERTIF_HDT = 26;
     public static final int CST_CERTIF_CEB = 27;
-    public static final int CST_TENU_COMPTES=28;
+    public static final int CST_TENU_COMPTES = 28;
 
     public void displayWindow(int windowType, Object obj) {
         /* Cherche si la fenêtre existe déjà */
@@ -1423,7 +1595,7 @@ public class MainWindow extends javax.swing.JFrame {
                 case CST_CERTIF_CEB:
                     title = "Certificat de coups et blessures";
                     break;
-                     case CST_TENU_COMPTES:
+                case CST_TENU_COMPTES:
                     title = "Tenue des compte du " + f.format(jxdpDateDébutDétails.getDate()) + " au " + f.format(jxdpDateFinDétails.getDate());
                     break;
             }
@@ -1541,7 +1713,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     public void closeWindow(JInternalFrame window) {
         jdpMain.remove(window);
-        window=null;
+        window = null;
         repaint();
     }
 }
