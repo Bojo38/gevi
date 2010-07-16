@@ -28,16 +28,13 @@ public class jdgNewDocument extends javax.swing.JDialog {
     /** Creates new form jdgNewDocument */
     public jdgNewDocument(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        
-
         initComponents();
-
         jxdpDate.setDate(new Date());
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gs = ge.getDefaultScreenDevice();
         DisplayMode dmode = gs.getDisplayMode();
-        
+
         if (dmode != null) {
             int screenWidth = dmode.getWidth();
             int screenHeight = dmode.getHeight();
@@ -205,23 +202,17 @@ public class jdgNewDocument extends javax.swing.JDialog {
         user.setPrenom(jtfPrenom.getText());
         user.setTelephone(jtfTelephone.getText());
 
-        try
-        {
-        doc.getBanque().setSoldeInitialBanque(Double.parseDouble(jftSoldeBanque.getText()));
-        }
-        catch (NumberFormatException e)
-        {
-             doc.getBanque().setSoldeInitialBanque(0.0);
-        }
-        try
-        {
-        doc.getBanque().setSoldeInitialCaisse(Double.parseDouble(jftSoldeCaisse.getText()));
-        }
-        catch (NumberFormatException e)
-        {
-             doc.getBanque().setSoldeInitialCaisse(0.0);
+        try {
+            doc.getBanque().setSoldeInitialBanque(Double.parseDouble(jftSoldeBanque.getText()));
+        } catch (NumberFormatException e) {
+            doc.getBanque().setSoldeInitialBanque(0.0);
         }
 
+        try {
+            doc.getBanque().setSoldeInitialCaisse(Double.parseDouble(jftSoldeCaisse.getText()));
+        } catch (Exception e) {
+            doc.getBanque().setSoldeInitialCaisse(0.0);
+        }
         if (user.getNom().equals("")) {
             JOptionPane.showMessageDialog(this, "Le champ NOM est vide", "Champ manquant", JOptionPane.ERROR_MESSAGE);
         } else {
