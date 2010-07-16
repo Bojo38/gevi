@@ -25,9 +25,11 @@ import gevi.Views.jifReports.jifReportVersements;
 import gevi.Model.Creneau;
 import gevi.Model.Document;
 import gevi.Model.Executant;
+import gevi.Model.Payement;
 import gevi.Model.Singleton;
 import gevi.Model.Utilisateur;
 import gevi.Model.Versement;
+import gevi.Model.Visite;
 import gevi.Model.XML;
 import gevi.Settings;
 import gevi.Views.jifCertifs.jifCertif;
@@ -83,6 +85,12 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import java.io.File;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.StringTokenizer;
+import jxl.*;
+import jxl.read.biff.BiffException;
 
 /**
  *
@@ -118,7 +126,7 @@ public class MainWindow extends javax.swing.JFrame {
     JButton jbtVoirEncaissements;
     JButton jbtVoirImpayes;
     JButton jbtVoirVisites;
-    String filename = "";
+    String _filename = "";
 
     /** Creates new form MainWindow */
     public MainWindow() {
@@ -142,15 +150,15 @@ public class MainWindow extends javax.swing.JFrame {
 
         this.setExtendedState(this.getExtendedState() | this.MAXIMIZED_BOTH);
 
-        filename = Settings.getSingleton().getProperty("LastFile");
+        _filename = Settings.getSingleton().getProperty("LastFile");
 
 
         InitDétailsPane();
         InitRapportPane();
 
-        if (filename != null) {
-            if (!filename.equals("")) {
-                loadFile(filename);
+        if (_filename != null) {
+            if (!_filename.equals("")) {
+                loadFile(_filename);
             }
         }
 
@@ -437,6 +445,8 @@ public class MainWindow extends javax.swing.JFrame {
         jmiEnregistrer = new javax.swing.JMenuItem();
         jmiEnregistrerSous = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
+        jmiImport = new javax.swing.JMenuItem();
+        jSeparator10 = new javax.swing.JSeparator();
         jmiFTPSave = new javax.swing.JMenuItem();
         jmiFTPDelete = new javax.swing.JMenuItem();
         jmiFTPLoad = new javax.swing.JMenuItem();
@@ -588,6 +598,16 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jmnFichier.add(jmiEnregistrerSous);
         jmnFichier.add(jSeparator1);
+
+        jmiImport.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        jmiImport.setText("Importer depuis un fichier XLS");
+        jmiImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiImportActionPerformed(evt);
+            }
+        });
+        jmnFichier.add(jmiImport);
+        jmnFichier.add(jSeparator10);
 
         jmiFTPSave.setText("Sauvegarde par FTP");
         jmiFTPSave.addActionListener(new java.awt.event.ActionListener() {
@@ -854,11 +874,25 @@ public class MainWindow extends javax.swing.JFrame {
 }//GEN-LAST:event_jmiParametresActionPerformed
 
     private void jmiOuvrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiOuvrirActionPerformed
+        if (!_filename.equals("")) {
+            try {
+                XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+                SimpleDateFormat format = new SimpleDateFormat(" -- yyyy-MM-dd hh-mm-ss");
+                sortie.output(XML.convertDocumentToXML(Singleton.instance().getDocument()), new FileOutputStream(_filename + format.format(new Date())));
+            } catch (FileNotFoundException e) {
+                JOptionPane.showMessageDialog(MainWindow.getMainWindow(), e.getLocalizedMessage());
+                e.printStackTrace();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(MainWindow.getMainWindow(), e.getLocalizedMessage());
+                e.printStackTrace();
+            }
+        }
+
         JFileChooser chooser = new JFileChooser();
         chooser.setMultiSelectionEnabled(false);
         int filechoosed = chooser.showOpenDialog(this);
         if (filechoosed == JFileChooser.APPROVE_OPTION) {
-            filename = chooser.getSelectedFile().getAbsolutePath();
+            String filename = chooser.getSelectedFile().getAbsolutePath();
             loadFile(filename);
         }
         repaint();
@@ -871,7 +905,7 @@ public class MainWindow extends javax.swing.JFrame {
             Singleton.instance().setDocument(XML.convertXMLToDocument(document));
             setHMIEnabled(Singleton.instance().getDocument() != null);
             Settings.getSingleton().setProperty("LastFile", filename);
-
+            _filename = filename;
         } catch (JDOMException e) {
             JOptionPane.showMessageDialog(MainWindow.getMainWindow(), e.getLocalizedMessage());
         } catch (IOException e) {
@@ -882,11 +916,211 @@ public class MainWindow extends javax.swing.JFrame {
             Singleton.instance().getDocument().getParametres().setSavePeriod(Integer.parseInt(Settings.getSingleton().getProperty("SavePeriod")));
         } catch (NumberFormatException e) {
             Singleton.instance().getDocument().getParametres().setSavePeriod(30000);
+        } catch (NullPointerException e) {
         }
-         catch (NullPointerException e)
-        {
-            
+    }
+
+    private String toLatin(String val) {
+        String tmp = val.replace("\u00E0", "à");
+        tmp = tmp.replace("\u00e2", "â");
+        tmp = tmp.replace("\u00e4", "ä");
+        tmp = tmp.replace("\u00e7", "ç");
+        tmp = tmp.replace("\ufffd", "è");
+        tmp = tmp.replace("\u00e9", "é");
+        tmp = tmp.replace("\u00ea", "ê");
+        tmp = tmp.replace("\u00eb", "ë");
+        tmp = tmp.replace("\u00ee", "î");
+        tmp = tmp.replace("\u00ef", "ï");
+        tmp = tmp.replace("\u00f4", "ô");
+        tmp = tmp.replace("\u00f6", "ö");
+        tmp = tmp.replace("\u00f9", "ù");
+        tmp = tmp.replace("\u00fb", "û");
+        tmp = tmp.replace("\u00fc", "ü");
+        return tmp;
+    }
+
+    private void ImportFile(String file) {
+        try {
+            Workbook wb = Workbook.getWorkbook(new File(file));
+            Sheet sheets[] = wb.getSheets();
+            for (int i = 0; i < sheets.length; i++) {
+                Creneau c = new Creneau();
+                SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                String tmp = sheets[i].getName();
+                Date d;
+                try {
+                    d = format.parse(tmp);
+                    c.setDate(d);
+                    int nb = sheets[i].getRows();
+                    for (int j = 1; j < nb; j++) {
+                        Cell ligne[] = sheets[i].getRow(j);
+                        Visite v = new Visite();
+
+                        v.setNom(toLatin(ligne[0].getContents()));
+                        if (ligne.length <= 7) {
+                            v.setDescription(toLatin(ligne[1].getContents()));
+                        } else {
+                            v.setDescription(toLatin(ligne[1].getContents()) + "\nChèque n°" + toLatin(ligne[7].getContents()));
+                        }
+                        v.setDiagnostique(toLatin(ligne[2].getContents()));
+
+                        if (ligne.length > 3) {
+                            StringTokenizer st = new StringTokenizer(toLatin(ligne[3].getContents()), "+");
+                            while (st.hasMoreElements()) {
+                                String el = st.nextToken();
+                                el = el.toUpperCase();
+                                if (el.equals("GAV")) {
+                                    v.setTypeVisite("GAV");
+                                    continue;
+                                }
+
+                                if (el.equals("IPM")) {
+                                    v.setTypeVisite("IPM");
+                                    continue;
+                                }
+                                if (el.equals("AG")) {
+                                    v.setTypeVisite("AG");
+                                    continue;
+                                }
+                                if (el.equals("C")) {
+                                    v.setTypeVisite("C");
+                                    continue;
+                                }
+                                if (el.equals("V")) {
+                                    v.setTypeVisite("V");
+                                    continue;
+                                }
+
+                                if (el.equals("V")) {
+                                    v.setTypeVisite("V");
+                                    continue;
+                                }
+                                if (el.equals("VMD")) {
+                                    v.setTypeVisite("V");
+                                    v.setMajorationPeriode("MD");
+                                    continue;
+                                }
+                                if (el.equals("VRD")) {
+                                    v.setTypeVisite("V");
+                                    v.setMajorationPeriode("VRD");
+                                    continue;
+                                }
+                                if (el.equals("VRN")) {
+                                    v.setTypeVisite("V");
+                                    v.setMajorationPeriode("VRN");
+                                    continue;
+                                }
+                                if (el.equals("VRM")) {
+                                    v.setTypeVisite("V");
+                                    v.setMajorationPeriode("VRM");
+                                    continue;
+                                }
+                                if (el.equals("CRD")) {
+                                    v.setTypeVisite("C");
+                                    v.setMajorationPeriode("CRD");
+                                    continue;
+                                }
+                                if (el.equals("CRN")) {
+                                    v.setTypeVisite("C");
+                                    v.setMajorationPeriode("CRN");
+                                    continue;
+                                }
+                                if (el.equals("CRM")) {
+                                    v.setTypeVisite("C");
+                                    v.setMajorationPeriode("CRM");
+                                    continue;
+                                }
+                                if (el.equals("MNO")) {
+                                    v.setMajorationNourrisson(true);
+                                    continue;
+                                }
+                                if (el.equals("ECG")) {
+                                    v.setECG(true);
+                                    v.setECGDomicile(true);
+                                    continue;
+                                }
+                                if (el.equals("UV")) {
+                                    v.setUrgenceVitale(true);
+                                    continue;
+                                }
+                                if (el.contains("IK")) {
+                                    v.setIK(Integer.parseInt(el.substring(0, el.indexOf("IK"))));
+                                    continue;
+                                }
+                                if (el.contains("IKM")) {
+                                    v.setIKM(Integer.parseInt(el.substring(0, el.indexOf("IKM"))));
+                                    continue;
+                                }
+                            }
+                            if (ligne.length > 5) {
+                                tmp = toLatin(ligne[4].getContents());
+                                String source = toLatin(ligne[5].getContents());
+                                if (source.equals("Sécu")) {
+                                    source = "Sécurité sociale";
+                                }
+                                if (source.equals("")) {
+                                    source = "Particulier";
+                                }
+                                if (source.equals("Retraite")) {
+                                    source = "Maison de retraite";
+                                }
+                                if (source.equals("CH")) {
+                                    source = "Hopital";
+                                }
+                                if (tmp.equals("Chèque")) {
+                                    Payement p = new Payement();
+                                    p.setMoyenPayement("Chèque");
+                                    p.setSourcePayement(source);
+                                    p.setMontant(0);
+                                    v.getPayements().add(p);
+                                }
+                                if (tmp.equals("ALD")) {
+                                    Payement p = new Payement();
+                                    p.setMoyenPayement("100%");
+                                    p.setSourcePayement("Sécurité sociale");
+                                    p.setMontant(0);
+                                    v.getPayements().add(p);
+                                }
+                                if (tmp.equals("CMU")) {
+                                    Payement p = new Payement();
+                                    p.setMoyenPayement("CMU");
+                                    p.setSourcePayement("Sécurité sociale");
+                                    p.setMontant(0);
+                                    v.getPayements().add(p);
+                                }
+                                if (tmp.equals("TP")) {
+                                    Payement p = new Payement();
+                                    p.setMoyenPayement("Tiers payant");
+                                    p.setSourcePayement("Sécurité sociale");
+                                    p.setMontant(0);
+                                    v.getPayements().add(p);
+                                }
+                                if (tmp.equals("Espèces")) {
+                                    Payement p = new Payement();
+                                    p.setMoyenPayement("Espèces");
+                                    p.setSourcePayement("Particulier");
+                                    p.setMontant(v.getTotal());
+                                    v.getPayements().add(p);
+                                }
+                            }
+                        }
+                        c.getVisites().add(v);
+                    }
+                    Singleton.instance().getDocument().getCreneaux().add(c);
+                } catch (ParseException e) {
+                    JOptionPane.showMessageDialog(this, "Le format de la date est incorrect: " + tmp);
+                }
+            }
+            wb.close();
+            JOptionPane.showMessageDialog(this, "Importation réussie");
+            return;
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+        } catch (BiffException e) {
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
         }
+        JOptionPane.showMessageDialog(this, "Importation Echouée, format du fichier incorrecte");
     }
 
     private void jmiNouveauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiNouveauActionPerformed
@@ -901,25 +1135,26 @@ public class MainWindow extends javax.swing.JFrame {
         Settings.getSingleton().setProperty("SavePeriod", ((Integer) Singleton.instance().getDocument().getParametres().getSavePeriod()).toString());
         save.setStop();
 
-        /*if (Singleton.instance().getDocument() != null) {
-        int save = JOptionPane.showConfirmDialog(this, "Voulez-vous sauver le document ?", "Quitte", JOptionPane.YES_NO_OPTION);
-        if (save == JOptionPane.YES_OPTION) {*/
-        jmiEnregistrerActionPerformed(evt);
-        /* }
-        }*/
+        if (Singleton.instance().getDocument() != null) {
+            int save = JOptionPane.showConfirmDialog(this, "Voulez-vous sauver le document ?", "Quitte", JOptionPane.YES_NO_OPTION);
+            if (save == JOptionPane.YES_OPTION) {
+                _filename = "";
+                jmiEnregistrerActionPerformed(evt);
+            }
+        }
         this.setVisible(false);
         System.exit(0);
     }//GEN-LAST:event_jmiQuitterActionPerformed
 
     private void jmiEnregistrerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiEnregistrerActionPerformed
-        if (filename.equals("")) {
+        if (_filename.equals("")) {
             JFileChooser chooser = new JFileChooser();
             int filechoosed = chooser.showSaveDialog(this);
             if (filechoosed == JFileChooser.APPROVE_OPTION) {
-                filename = chooser.getSelectedFile().getAbsolutePath();
+                _filename = chooser.getSelectedFile().getAbsolutePath();
             }
         }
-        if (!filename.equals("")) {
+        if (!_filename.equals("")) {
             try {
                 /*FileOutputStream fos = new FileOutputStream(filename);
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -928,8 +1163,8 @@ public class MainWindow extends javax.swing.JFrame {
                 fos.close();*/
 
                 XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-                sortie.output(XML.convertDocumentToXML(Singleton.instance().getDocument()), new FileOutputStream(filename));
-                Settings.getSingleton().setProperty("LastFile", filename);
+                sortie.output(XML.convertDocumentToXML(Singleton.instance().getDocument()), new FileOutputStream(_filename));
+                Settings.getSingleton().setProperty("LastFile", _filename);
                 Settings.getSingleton().saveProperties();
 
             } catch (FileNotFoundException e) {
@@ -943,7 +1178,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void jmiEnregistrerSousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiEnregistrerSousActionPerformed
 
-        filename = "";
+        _filename = "";
         jmiEnregistrerActionPerformed(evt);
     }//GEN-LAST:event_jmiEnregistrerSousActionPerformed
 
@@ -1121,7 +1356,7 @@ public class MainWindow extends javax.swing.JFrame {
         FTPClient client = new FTPClient();
         try {
             XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-            sortie.output(XML.convertDocumentToXML(Singleton.instance().getDocument()), new FileOutputStream(filename));
+            sortie.output(XML.convertDocumentToXML(Singleton.instance().getDocument()), new FileOutputStream(_filename));
 
             client.connect(Singleton.instance().getDocument().getParametres().getFTPServer());
             /* connect & login to host */
@@ -1129,13 +1364,13 @@ public class MainWindow extends javax.swing.JFrame {
             String password = JOptionPane.showInputDialog("Entrez le mot de passe pour le serveur FTP");
             client.login(Singleton.instance().getDocument().getParametres().getFTPId(), password);
             if (client.isConnected()) {
-                File f = new File(filename);
+                File f = new File(_filename);
                 SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
 
                 client.changeDirectory(Singleton.instance().getDocument().getParametres().getFTPDirectory());
                 client.upload(f);
                 client.rename(f.getName(), f.getName() + "-" + format.format(new Date()));
-                JOptionPane.showMessageDialog(this, f.getName()+" sauvegardé");
+                JOptionPane.showMessageDialog(this, f.getName() + " sauvegardé");
             } else {
                 JOptionPane.showMessageDialog(this, "Erreur de connexion");
             }
@@ -1167,24 +1402,23 @@ public class MainWindow extends javax.swing.JFrame {
                 FTPFile[] list = client.list();
                 /*String[] liste = new String[list.length];
                 for (int i = 0; i < list.length; i++) {
-                    liste[i] = list[i].getName();
+                liste[i] = list[i].getName();
                 }
                 int option = JOptionPane.showOptionDialog(this, "Sélectionnez le fichier", "Charger par FTP", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, liste, liste[0]);
-*/
-                jdgSelectionFichier jdg=new jdgSelectionFichier(this, true, list);
+                 */
+                jdgSelectionFichier jdg = new jdgSelectionFichier(this, true, list);
                 jdg.setVisible(true);
 
                 /*if (option >= 0) {
-                    FTPFile file = list[option];*/
+                FTPFile file = list[option];*/
                 FTPFile file = jdg.getSelection();
-                if (file!=null)
-                {
-                    File f = new File(filename);
+                if (file != null) {
+                    File f = new File(_filename);
                     SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
-                    client.download(file.getName(), new File(f.getParentFile() + "/" + file.getName()));                    
+                    client.download(file.getName(), new File(f.getParentFile() + "/" + file.getName()));
                     loadFile(f.getParentFile() + "/" + file.getName());
-                    filename=f.getParentFile() + "/" + file.getName();
-                    JOptionPane.showMessageDialog(this, file.getName()+" chargé");
+                    _filename = f.getParentFile() + "/" + file.getName();
+                    JOptionPane.showMessageDialog(this, file.getName() + " chargé");
                     repaint();
                 }
             } else {
@@ -1219,20 +1453,19 @@ public class MainWindow extends javax.swing.JFrame {
                 FTPFile[] list = client.list();
                 /*String[] liste = new String[list.length];
                 for (int i = 0; i < list.length; i++) {
-                    liste[i] = list[i].getName();
+                liste[i] = list[i].getName();
                 }
                 int option = JOptionPane.showOptionDialog(this, "Sélectionnez le fichier", "Charger par FTP", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, liste, liste[0]);
-*/
-                jdgSelectionFichier jdg=new jdgSelectionFichier(this, true, list);
+                 */
+                jdgSelectionFichier jdg = new jdgSelectionFichier(this, true, list);
                 jdg.setVisible(true);
 
                 /*if (option >= 0) {
-                    FTPFile file = list[option];*/
+                FTPFile file = list[option];*/
                 FTPFile file = jdg.getSelection();
-                if (file!=null)
-                {
+                if (file != null) {
                     client.deleteFile(file.getName());
-                    JOptionPane.showMessageDialog(this, file.getName()+" effacé");
+                    JOptionPane.showMessageDialog(this, file.getName() + " effacé");
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Erreur de connexion");
@@ -1252,6 +1485,16 @@ public class MainWindow extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
         }
     }//GEN-LAST:event_jmiFTPDeleteActionPerformed
+
+    private void jmiImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiImportActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.setMultiSelectionEnabled(false);
+        int filechoosed = chooser.showOpenDialog(this);
+        if (filechoosed == JFileChooser.APPROVE_OPTION) {
+            ImportFile(chooser.getSelectedFile().getAbsolutePath());
+        }
+        repaint();
+    }//GEN-LAST:event_jmiImportActionPerformed
     static thSaveDocument save = null;
 
     /**
@@ -1288,6 +1531,7 @@ public class MainWindow extends javax.swing.JFrame {
     javax.swing.JMenuBar jMenuBar1;
     javax.swing.JPanel jPanel1;
     javax.swing.JSeparator jSeparator1;
+    javax.swing.JSeparator jSeparator10;
     javax.swing.JSeparator jSeparator2;
     javax.swing.JSeparator jSeparator3;
     javax.swing.JSeparator jSeparator4;
@@ -1321,6 +1565,7 @@ public class MainWindow extends javax.swing.JFrame {
     javax.swing.JMenuItem jmiGAV;
     javax.swing.JMenuItem jmiHDT;
     javax.swing.JMenuItem jmiImpayes;
+    javax.swing.JMenuItem jmiImport;
     javax.swing.JMenuItem jmiMEB;
     javax.swing.JMenuItem jmiMosaique;
     javax.swing.JMenuItem jmiNouveau;
@@ -1370,9 +1615,9 @@ public class MainWindow extends javax.swing.JFrame {
             jmnFenetres.add(item);
         }
 
-        if (filename != null) {
-            if (!filename.equals("")) {
-                this.setTitle("Gestion des visites - " + filename);
+        if (_filename != null) {
+            if (!_filename.equals("")) {
+                this.setTitle("Gestion des visites - " + _filename);
             }
         }
     }
