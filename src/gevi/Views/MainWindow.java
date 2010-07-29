@@ -1136,10 +1136,21 @@ public class MainWindow extends javax.swing.JFrame {
         save.setStop();
 
         if (Singleton.instance().getDocument() != null) {
-            int save = JOptionPane.showConfirmDialog(this, "Voulez-vous sauver le document ?", "Quitte", JOptionPane.YES_NO_OPTION);
-            if (save == JOptionPane.YES_OPTION) {
-                _filename = "";
+
+            String options[] = {"Oui", "Non", "Dans un autre fichier"};
+            int res = JOptionPane.showOptionDialog(this,
+                    "Voulez-vous sauver le document dans le fichier " + _filename + " ?",
+                    "Quitter", JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, options, 0);
+            if (res == 0) {
                 jmiEnregistrerActionPerformed(evt);
+            }
+            if (res == 2) {
+                int save = JOptionPane.showConfirmDialog(this, "Voulez-vous sauver le document ?", "Quitte", JOptionPane.YES_NO_OPTION);
+                if (save == JOptionPane.YES_OPTION) {
+                    _filename = "";
+                    jmiEnregistrerActionPerformed(evt);
+                }
             }
         }
         this.setVisible(false);
